@@ -143,6 +143,25 @@ try {
 		$admin->tpl->assign('db', $db);
 		$admin->tpl->display('configuration_denora.tpl');
 	});
+	$admin->slim->get('/configuration/anope', function() use ($admin) {
+		if (!$admin->sessionStatus()) { $admin->slim->halt(403, "HTTP 403 Access Denied"); }
+		$service = isset($_GET['service']) ? basename($_GET['service']) : 'anope';
+		$db_config_file = "../conf/{$service}.cfg.php";
+		$db = array();
+		if (file_exists($db_config_file)) {
+			include($db_config_file);
+		} else {
+			@touch($db_config_file);
+		}
+		if (!$db) {
+			$db = array('username' => 'anope', 'password' => 'anope', 'prefix' => 'anope_', 'database' => 'anope', 'hostname' => 'localhost');
+		}
+		$admin->tpl->assign('db_config_file', $db_config_file);
+		$admin->tpl->assign('writable', is_writable($db_config_file));
+		$admin->tpl->assign('db', $db);
+		$admin->tpl->display('configuration_anope.tpl');
+	});
+
 	$admin->slim->post('/content', function() use ($admin) {
 		if (!$admin->sessionStatus()) { $admin->slim->halt(403, "HTTP 403 Access Denied"); }
 		$admin->slim->contentType('application/json');
@@ -176,6 +195,7 @@ try {
 			//TODO: do proper escaping to avoid breaking php code in the config files
 			$db['username'] = (isset($_POST['username'])) ? $_POST['username'] : $db['username'];
 			$db['password'] = (isset($_POST['password'])) ? $_POST['password'] : $db['password'];
+			$db['prefix'] = (isset($_POST['prefix'])) ? $_POST['prefix'] : $db['prefix'];
 			$db['database'] = (isset($_POST['database'])) ? $_POST['database'] : $db['database'];
 			$db['hostname'] = (isset($_POST['hostname'])) ? $_POST['hostname'] : $db['hostname'];
 			$db['port'] = (isset($_POST['port'])) ? $_POST['port'] : $db['port'];
@@ -186,6 +206,7 @@ try {
 			$db_buffer = "<?php\n".
 				"\$db['username'] = '{$db['username']}';\n".
 				"\$db['password'] = '{$db['password']}';\n".
+				"\$db['prefix'] = '{$db['prefix']}';\n".
 				"\$db['database'] = '{$db['database']}';\n".
 				"\$db['hostname'] = '{$db['hostname']}';\n".
 				"\$db['port'] = '{$db['port']}';\n".
