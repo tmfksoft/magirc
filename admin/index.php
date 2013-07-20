@@ -195,7 +195,7 @@ try {
 			//TODO: do proper escaping to avoid breaking php code in the config files
 			$db['username'] = (isset($_POST['username'])) ? $_POST['username'] : $db['username'];
 			$db['password'] = (isset($_POST['password'])) ? $_POST['password'] : $db['password'];
-			$db['prefix'] = (isset($_POST['prefix'])) ? $_POST['prefix'] : $db['prefix'];
+			$db['prefix'] = (isset($_POST['prefix'])) ? $_POST['prefix'] : (isset($db['prefix']) ? $db['prefix'] : '');
 			$db['database'] = (isset($_POST['database'])) ? $_POST['database'] : $db['database'];
 			$db['hostname'] = (isset($_POST['hostname'])) ? $_POST['hostname'] : $db['hostname'];
 			$db['port'] = (isset($_POST['port'])) ? $_POST['port'] : $db['port'];
